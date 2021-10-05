@@ -43,7 +43,7 @@ export const localRestaurants = [
 
 export default function RestaurentItem({ navigation, ...props }) {
     return (
-        <View>
+        <>
             {props.restaurantData.map((restaurant, index) => (
                 <TouchableOpacity
                     key={index}
@@ -76,7 +76,7 @@ export default function RestaurentItem({ navigation, ...props }) {
                     </View>
                 </TouchableOpacity>
             ))}
-        </View>
+        </>
     );
 }
 
