@@ -39,7 +39,6 @@ export default function Home({ navigation }) {
             );
     };
 
-
     useEffect(() => {
         getRestaurentFromYelp();
     }, [city, activeTab]);
