@@ -5,6 +5,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import configureStore from "./redux/store";
 import Home from "./screens/Home";
 import Restaurant from "./screens/Restaurant";
+import OrderCompleted from "./screens/OrderCompleted";
 import { LogBox } from "react-native";
 
 LogBox.ignoreAllLogs();
@@ -27,6 +28,7 @@ export default function RootNavigation() {
                 >
                     <Stack.Screen name="Home" component={Home} />
                     <Stack.Screen name="Restaurant" component={Restaurant} />
+                    <Stack.Screen name="OrderCompleted" component={OrderCompleted} />
                 </Stack.Navigator>
             </NavigationContainer>
         </ReduxProvider>
