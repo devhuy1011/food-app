@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
 import OderItem from "./OderItem";
-import firebase from '../../fireBase'
+import firebase from "../../fireBase";
+import LottieView from "lottie-react-native";
 
-export default function ViewCart() {
+export default function ViewCart({ navigation }) {
     const [modelVisible, setModelVisible] = useState(false);
+    const [loadding, setLoadding] = useState(false);
+
     const { items, restaurantName } = useSelector(
         (state) => state.cartReducer.selectedItems
     );
@@ -19,14 +22,21 @@ export default function ViewCart() {
     });
 
     const addOderToFirebase = () => {
+        setLoadding(true);
         const db = firebase.firestore();
-        db.collection('orders').add({
-            items: items,
-            restaurantName: restaurantName,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        setModelVisible(false);
-    }
+        db.collection("orders")
+            .add({
+                items: items,
+                restaurantName: restaurantName,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+            .then(() => {
+                setTimeout(() => {
+                    setLoadding(false);
+                    navigation.navigate("OrderCompleted");
+                }, 2500);
+            });
+    };
 
     const checkOutModalContent = () => {
         return (
@@ -46,21 +56,41 @@ export default function ViewCart() {
                             justifyContent: "center",
                         }}
                     >
-                        <TouchableOpacity style={{ 
-                            marginTop:20,
-                            backgroundColor: '#000',
-                            alignItems: 'center',
-                            padding: 13, 
-                            borderRadius: 30,
-                            width: 300,
-                            position: 'relative'
-                        }}
+                        <TouchableOpacity
+                            style={{
+                                marginTop: 20,
+                                backgroundColor: "#000",
+                                alignItems: "center",
+                                padding: 13,
+                                borderRadius: 30,
+                                width: 300,
+                                position: "relative",
+                            }}
                             onPress={() => {
-                                addOderToFirebase()
+                                addOderToFirebase();
+                                setModelVisible(false);
                             }}
                         >
-                            <Text style={{color: 'white', fontSize:20, fontWeight: 'bold'}}>Check out</Text>
-                            <Text style={{color: 'white', fontSize:20, position: 'absolute', right: 20, top: 13}}>${total ? totalUSD : ''}</Text>
+                            <Text
+                                style={{
+                                    color: "white",
+                                    fontSize: 20,
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                Check out
+                            </Text>
+                            <Text
+                                style={{
+                                    color: "white",
+                                    fontSize: 20,
+                                    position: "absolute",
+                                    right: 20,
+                                    top: 13,
+                                }}
+                            >
+                                ${total ? totalUSD : ""}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -68,7 +98,7 @@ export default function ViewCart() {
         );
     };
     return (
-        <View style={{position: 'relative'}}>
+        <>
             <Modal
                 animationType="slide"
                 visible={modelVisible}
@@ -85,8 +115,8 @@ export default function ViewCart() {
                         justifyContent: "center",
                         flexDirection: "row",
                         position: "absolute",
-                        bottom: 50,
-                        zIndex: 999,
+                        bottom: 330,
+                        zIndex: 99,
                     }}
                 >
                     <View
@@ -105,7 +135,7 @@ export default function ViewCart() {
                                 alignItems: "center",
                                 padding: 13,
                                 borderRadius: 30,
-                                width: 300,
+                                width: 250,
                                 position: "relative",
                                 flexDirection: "row",
                                 justifyContent: "flex-end",
@@ -131,7 +161,31 @@ export default function ViewCart() {
             ) : (
                 <></>
             )}
-        </View>
+            {loadding ? ( 
+                <View
+                    style={{
+                        backgroundColor: "black",
+                        position: "absolute",
+                        bottom: 200,
+                        opacity: 0.6,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                        width: "100%",
+                        zIndex: 999
+                    }}
+                >
+                    <LottieView
+                        style={{ height: 200}}
+                        source={require("../../assets/animations/scanner.json")}
+                        autoPlay
+                        speed={3}
+                    />
+                </View>
+            ) : (
+                <></>
+            )}
+        </>
     );
 }
 
@@ -140,6 +194,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-end",
         backgroundColor: "rgba(0,0,0,0.7)",
+        position: "relative",
     },
     modalCheckoutContainer: {
         backgroundColor: "white",

@@ -1,38 +1,10 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, SafeAreaView } from "react-native";
 import { Divider } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
-const foods = [
-    {
-        title: "Gà nướng kiểu Pháp",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9H4aWAL8Xx8LIFcDQE2dcA_BfLUUpoV0aWw&usqp=CAU",
-        price: "$20.5",
-        description: "Amazing food form chiken 🇫🇷 ",
-    },
-    {
-        title: "Beef medium rare kiểu Pháp",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvsYxfZk3s7O9GXj46W42xImNZ3WAEagRG5A&usqp=CAU",
-        price: "$30.5",
-        description: "Hottest number 1 in restaurant 🔥",
-    },
-    {
-        title: "Phở Việt Nam",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1wXJwCN8z5ZKU4J5N9CN0nsXn5VRZigI8nw&usqp=CAU",
-        price: "$15.5",
-        description: "VietNames fast food noodles 🇻🇳  ",
-    },
-
-    {
-        title: "Món ăn kiểu Hàn Quốc",
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuQ2sip22iAcGNQQRhX6XZop7puqTl1L8Q-A&usqp=CAU",
-        price: "$15.5",
-        description: "Korean fast food noodles 🇰🇷  ",
-    },
-];
-
-export default function MenuItem({ restaurantName }) {
+export default function MenuItem({ restaurantName, foods, hideCheckbox, marginLeft, marginBottom }) {
     const dispatch = useDispatch();
     const selectItem = (item, checkboxValue) =>
         dispatch({
@@ -52,24 +24,28 @@ export default function MenuItem({ restaurantName }) {
         Boolean(cartItems.find((item) => item.title === food.title));
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            {foods.map((food, index) => (
+        <ScrollView style={{marginBottom: marginBottom ? 0 : 300}} showsVerticalScrollIndicator={false}>
+            {foods?.map((food, index) => (
                 <View key={index}>
                     <View style={styles.menuItemStyle}>
-                        <BouncyCheckbox
-                            iconStyle={{
-                                borderColor: "lightgray",
-                                borderRadius: 5,
-                                marginRight: 10,
-                            }}
-                            fillColor="blue"
-                            onPress={(checkboxValue) =>
-                                selectItem(food, checkboxValue)
-                            }
-                            isChecked={isFoodInCart(food, cartItems)}
-                        />
+                        {hideCheckbox ? (
+                            <></>
+                        ) : (
+                            <BouncyCheckbox
+                                iconStyle={{
+                                    borderColor: "lightgray",
+                                    borderRadius: 5, 
+                                    marginRight: 10,
+                                }}
+                                fillColor="blue"
+                                onPress={(checkboxValue) =>
+                                    selectItem(food, checkboxValue)
+                                }
+                                isChecked={isFoodInCart(food, cartItems)}
+                            />
+                        )}
                         <FoodInfo food={food} />
-                        <FoodImage food={food} />
+                        <FoodImage food={food} marginLeft={marginLeft ? marginLeft : 0} />
                     </View>
                     <Divider
                         width={0.5}
@@ -101,7 +77,7 @@ const FoodInfo = (props) => (
     </View>
 );
 
-const FoodImage = (props) => (
+const FoodImage = ({marginLeft ,...props}) => (
     <View>
         <Image
             source={{ uri: props.food.image }}
@@ -109,6 +85,7 @@ const FoodImage = (props) => (
                 width: 100,
                 height: 100,
                 borderRadius: 8,
+                marginLeft: marginLeft
             }}
         />
     </View>
